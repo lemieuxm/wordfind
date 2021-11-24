@@ -8,9 +8,9 @@ from wordfind.WFRenderer import renderPDF
 
 
 def main():
-    title = "Xavier Study 2021.11.16"
-    rows = 25
-    cols = 25
+    title = "Xavier Study 2021.11.17"
+    rows = 18
+    cols = 18
     english_sm2wk4 = ['ferocious', 'shine', 'shone', 'doubt', 'stare', 
                       'stared', 'descended', 'relief', 'knowledge', 
                       'disbelief', 'rhythm', 'murmured']
@@ -21,10 +21,16 @@ def main():
     
     words = english_sm2wk4
     words.extend(français)
+    words.sort()
 
     wfdict = buildFromWords(words, rows, cols, title)
-    renderPDF(wfdict, "/tmp/%s.pdf"%title)
-    print("Finished writing words.")
+    if not wfdict:
+        print("Unable to build after several tries.  Either try again or make the grid larger.")
+        exit(1)
+    else:
+        outfile = "/tmp/%s.pdf"%title
+        renderPDF(wfdict, outfile)
+        print("Finished writing to %s"%outfile)
 
 
 if __name__ == '__main__':

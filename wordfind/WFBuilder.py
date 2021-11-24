@@ -94,7 +94,7 @@ def fillBlanks(grid):
     return(grid) 
     
 
-def _build(wfdict):
+def _build(wfdict, fill_blanks=True):
     # Fill the grid with empty strings
     wfdictbackup = copy.deepcopy(wfdict)
     wfgrid = []
@@ -115,14 +115,14 @@ def _build(wfdict):
             return(False) 
         wfword['start']=(r,c)
         wfword['direction']=direction
-
-    wfgrid = fillBlanks(wfgrid)
+    if fill_blanks:
+        wfgrid = fillBlanks(wfgrid)
         
     wfdict['grid'] = wfgrid
         
     return(True)    
     
-def build(wfdict, n=5):
+def build(wfdict, n=100):
     for i in range(n):   # @UnusedVariable
         if _build(wfdict):
             return(True)
@@ -146,14 +146,16 @@ def strip_accents(s):
     return(s.upper()) 
     
     
-def buildFromWords(words, rows, cols, title):
+def buildFromWords(words, rows, cols, title, imagedata=None):
     wfdict = {'title':title, 'rows':rows, 'columns':cols, 'words':[]}
-
-    for word in words:
-        wfdict['words'].append({
-                'word': word, 'wfword': strip_accents(word),
-                # not adding image_file right now
-            })
+    
+    for i in range(len(words)):
+        word = words[i]
+        word_dict = {'word': word, 'wfword': strip_accents(word)}
+        if imagedata:
+            for k,v in imagedata[i]:
+                word_dict[k] = v
+        wfdict['words'].append(word_dict)
 
     if build(wfdict):
         return(wfdict)
