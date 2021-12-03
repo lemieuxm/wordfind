@@ -25,35 +25,56 @@ import unicodedata
 
 
 DIRECTIONS = [ 
-    (-1,0),  # up 
-    (-1,1),  # up right
-    (0,1),   # right
-    (1,1),   # down right
-    (1,0),   # down
-    (1,-1),  # down left
-    (0,-1),  # left
-    (-1,-1), # up left
+    (-1,0),  # up 0
+    (-1,1),  # up right 1
+    (0,1),   # right 2
+    (1,1),   # down right 3
+    (1,0),   # down 4
+    (1,-1),  # down left 5
+    (0,-1),  # left 6
+    (-1,-1), # up left 7
     ]
 
-def canBeAdded(word, grid, dirTuple, start):
+BLANK = '_'
+
+def canBeAdded(word, grid, dirTuple, start, requireIntersect=False):
+    hasIntersect = False
+    
+    # Don't start words with another letter before the starting 
+    #      letter in the same direction
+    r = start[0]-dirTuple[0]
+    c = start[1]-dirTuple[1]
+    if r>=0 and c>=0 and grid[r][c]:
+        return(False)
+    # Don't end words with another letter after the ending 
+    #      letter in the same direction
+    r = start[0] + dirTuple[0]*len(word)
+    c = start[1] + dirTuple[1]*len(word)
+    if r<len(grid) and c<len(grid[0]) and grid[r][c]:
+        return(False)
+
     for i in range(len(word)):
         r = start[0] + dirTuple[0]*i
         c = start[1] + dirTuple[1]*i
         if r>len(grid)-1 or c>len(grid[0])-1:
+            # This should never happen, it is here to detect a bug
             print("ERROR: r or c is too big.")
-            print("place holder")
-        letter = grid[r][c]
-        if letter and letter.upper() != word[i].upper():
             return(False)
+        letter = grid[r][c]
+        if letter:
+            if letter.upper() != word[i].upper():
+                return(False)
+            hasIntersect = True
+
+            
     # All cells are either empty, or filled and matches the word 
-    return(True)
+    return(not requireIntersect or hasIntersect)
             
 
-def addWord(word, grid):
+def addWord(word, grid, directions=[i for i in range(8)], requireIntersect=False):
     wordLen = len(word)
     rows = len(grid)
     cols = len(grid[0])
-    directions = [i for i in range(8)]
     random.shuffle(directions)
     for i in directions: # iterate over the directions
         minrow = -min(0,wordLen*DIRECTIONS[i][0])
@@ -66,13 +87,80 @@ def addWord(word, grid):
             cols_j = [x for x in range(mincol, maxcol)]
             random.shuffle(cols_j)
             for k in cols_j:
-                if canBeAdded(word, grid, DIRECTIONS[i], (j,k)):
+                if canBeAdded(word, grid, DIRECTIONS[i], (j,k), requireIntersect):
                     for m in range(len(word)):
                         r = j + DIRECTIONS[i][0]*m
                         c = k + DIRECTIONS[i][1]*m
                         grid[r][c] = word[m].upper()
                     return(grid, i, j, k)
                 
+    return(grid, None, None, None)
+
+
+def isEmpty(grid):
+    for i in range(len(grid)):
+        for j in range(len(grid[i])):
+            if grid[i][j]:
+                return(False)
+    return(True)
+
+def intersection(lst1, lst2):
+    lst3 = [list(filter(lambda x: x in lst1, sublist)) for sublist in lst2]
+    return lst3
+
+
+def addWordForCW(word, grid):
+    wordLen = len(word)
+    rows = len(grid)
+    cols = len(grid[0])
+    directions = [2,4]
+    random.shuffle(directions)
+    
+    if isEmpty(grid):
+        grid, i, j, k = addWord(word, grid, directions)
+        r = j-DIRECTIONS[i][0]
+        c = k-DIRECTIONS[i][1]
+        if r>=0 and c>=0 and not grid[r][c]:
+            grid[r][c] = BLANK
+        # Don't end words with another letter after the ending 
+        #      letter in the same direction
+        r = j+DIRECTIONS[i][0]*len(word)
+        c = k+DIRECTIONS[i][1]*len(word)
+        if r<len(grid) and c<len(grid[0]) and not grid[r][c]:
+            grid[r][c] = BLANK  
+        return(grid, i, j, k)
+    
+    # intersectChars = intersection(list(word), grid)
+    
+    for i in directions:
+        minrow = -min(0,wordLen*DIRECTIONS[i][0])
+        maxrow = min(rows, rows-max(1,wordLen*DIRECTIONS[i][0]))
+        rows_j = [x for x in range(minrow, maxrow+1)]
+        random.shuffle(rows_j)
+        for j in rows_j:
+            mincol = -min(0,wordLen*DIRECTIONS[i][1])
+            maxcol = min(cols, cols-max(1,wordLen*DIRECTIONS[i][1]))
+            cols_j = [x for x in range(mincol, maxcol+1)]
+            random.shuffle(cols_j)
+            for k in cols_j:
+                #if grid[j][k] and grid[j][k] in word:                
+                if canBeAdded(word, grid, DIRECTIONS[i], (j,k), requireIntersect=True):
+                    r = j-DIRECTIONS[i][0]
+                    c = k-DIRECTIONS[i][1]
+                    if r>=0 and c>=0 and not grid[r][c]:
+                        grid[r][c] = BLANK
+                    # Don't end words with another letter after the ending 
+                    #      letter in the same direction
+                    r = j+DIRECTIONS[i][0]*len(word)
+                    c = k+DIRECTIONS[i][1]*len(word)
+                    if r<len(grid) and c<len(grid[0]) and not grid[r][c]:
+                        grid[r][c] = BLANK                    
+                    for m in range(len(word)):
+                        r = j + DIRECTIONS[i][0]*m
+                        c = k + DIRECTIONS[i][1]*m
+                        grid[r][c] = word[m].upper()
+                    return(grid, i, j, k)
+                   
     return(grid, None, None, None)
 
 # list('abcdefghijklmnopqrstuvwxyz')
@@ -92,9 +180,18 @@ def fillBlanks(grid):
                 grid[i][j] = random.choice(letters)
     
     return(grid) 
+
+def removeBlanks(grid):
+    rows = len(grid)
+    cols = len(grid[0])
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == BLANK:
+                grid[i][j] = ""
+    return(grid)
     
 
-def _build(wfdict, fill_blanks=True):
+def _build(wfdict, fillBlanks=True):
     # Fill the grid with empty strings
     wfdictbackup = copy.deepcopy(wfdict)
     wfgrid = []
@@ -105,27 +202,45 @@ def _build(wfdict, fill_blanks=True):
     
     word_is = [i for i in range(len(wfdict['words']))]
     random.shuffle(word_is)
+    wordnum = 0
+    starts_used = {}
     for j in word_is:
         wfword = wfdict['words'][j]
-        wfgrid, direction, r, c = addWord(wfword['wfword'], wfgrid)
+        if fillBlanks:
+            wfgrid, direction, r, c = addWord(wfword['wfword'], wfgrid)
+        else:
+            wfgrid, direction, r, c = addWordForCW(wfword['wfword'], wfgrid)
+
         if r is None or c is None or direction is None:
-            # Unable to build with words added
+            print("Unable to complete puzzle")
             for k,v in wfdictbackup.items():
                 wfdict[k]=v
             return(False) 
         wfword['start']=(r,c)
         wfword['direction']=direction
-    if fill_blanks:
+        if wfword['start'] in starts_used.keys():
+            wfword['wordnum'] = starts_used[wfword['start']]
+        else:            
+            wordnum += 1
+            wfword['wordnum'] = wordnum
+            starts_used[wfword['start']] = wordnum
+
+    if fillBlanks:
         wfgrid = fillBlanks(wfgrid)
+    else:
+        wfgrid = removeBlanks(wfgrid)
+        pass
         
     wfdict['grid'] = wfgrid
+    wfdict['numwords'] = wordnum
         
     return(True)    
     
-def build(wfdict, n=100):
+def build(wfdict, n=10000, fillBlanks=True):
     for i in range(n):   # @UnusedVariable
-        if _build(wfdict):
+        if _build(wfdict, fillBlanks=fillBlanks):
             return(True)
+        print("No puzzle after %i tries"%(i+1))
     return(False)
 
 def strip_accents(s):
@@ -146,18 +261,14 @@ def strip_accents(s):
     return(s.upper()) 
     
     
-def buildFromWords(words, rows, cols, title, imagedata=None):
+def buildFromWords(words, rows, cols, title, fillBlanks=True):
     wfdict = {'title':title, 'rows':rows, 'columns':cols, 'words':[]}
     
-    for i in range(len(words)):
-        word = words[i]
-        word_dict = {'word': word, 'wfword': strip_accents(word)}
-        if imagedata:
-            for k,v in imagedata[i]:
-                word_dict[k] = v
+    for word_dict in words:
+        word_dict['wfword'] = strip_accents(word_dict['word'])
         wfdict['words'].append(word_dict)
 
-    if build(wfdict):
+    if build(wfdict, fillBlanks=fillBlanks):
         return(wfdict)
     
     return(None)

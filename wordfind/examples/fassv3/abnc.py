@@ -8,6 +8,7 @@ import os
 
 from wordfind.WFBuilder import buildFromWords
 from wordfind.WFImageRec import create_imagerec
+from wordfind.WFRenderer import renderCross
 from wordfind.data.import_images import read_image_from_dir
 from wordfind.data.mysql_helper import MysqlHelper
 
@@ -49,15 +50,21 @@ def get_data(grps):
     return(data)
             
             
-def build_cross(grps, width=16, height=16, name=None):
+def build_cross(grps, width=16, height=16, name=None, key=False):
     data = get_data(grps)
+    
     if not name:
         name = os.path.sep.join(grps)
-    words = [dat['word'] for dat in data]
-    imagelocs = [dat['imageloc'] for dat in data]
-    wfdict = buildFromWords(words, 16, 16, name, data)
-    
-    print("found %i rows for %s"%(len(data), name))    
+    # wordimagemap = {}
+    # for dat in data:
+    #     wordimagemap[dat['word']] = dat['imageloc']
+    # words = [dat['word'] for dat in data]
+    wfdict = buildFromWords(data, width, height, name, fillBlanks=False)
+    for r in wfdict['grid']:
+        print("%s"%" ".join(r))
+    renderCross(wfdict, key=key) 
+
+    print("found %i rows for %s"%(len(data), name))
     
 
 def build_worksheet(grps):
@@ -68,9 +75,12 @@ def build_worksheet(grps):
 
 
 def main():
-    build_worksheet(['6a_6b'])
-    build_worksheet(['6c_6b'])
-    
+    # build_worksheet(['6a_6b'])
+    # build_worksheet(['6c_6b'])
+    # build_cross(['6a_6b'], width=12, height=12, key=False)
+    # build_cross(['6c_6b'], width=12, height=12, key=False)
+    build_cross(['6c_6b', '6a_6b'], width=16, height=16, key=False)
 
 if __name__ == '__main__':
     main()
+
