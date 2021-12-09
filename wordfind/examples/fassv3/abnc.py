@@ -13,7 +13,6 @@ from wordfind.data.import_images import read_image_from_dir
 from wordfind.data.mysql_helper import MysqlHelper
 
 
-# import os
 IMAGE_ROOT = "/Users/mdl/Documents/XavierFASSV/mots/images"
 
 def build_worksheet_sql(grps):
@@ -55,10 +54,7 @@ def build_cross(grps, width=16, height=16, name=None, key=False):
     
     if not name:
         name = os.path.sep.join(grps)
-    # wordimagemap = {}
-    # for dat in data:
-    #     wordimagemap[dat['word']] = dat['imageloc']
-    # words = [dat['word'] for dat in data]
+        
     wfdict = buildFromWords(data, width, height, name, fillBlanks=False)
     for r in wfdict['grid']:
         print("%s"%" ".join(r))
@@ -69,17 +65,19 @@ def build_cross(grps, width=16, height=16, name=None, key=False):
 
 def build_worksheet(grps):
     data = get_data(grps)
-    name = os.path.sep.join(grps)
+    name = '_'.join(grps)
     create_imagerec(data, name)
     print("found %i rows for %s"%(len(data), name))
 
 
 def main():
-    # build_worksheet(['6a_6b'])
+    build_worksheet(['7a','7b'])
+    build_worksheet(['7b','7c'])
+    build_worksheet(['7a','7b','7c'])
     # build_worksheet(['6c_6b'])
     # build_cross(['6a_6b'], width=12, height=12, key=False)
     # build_cross(['6c_6b'], width=12, height=12, key=False)
-    build_cross(['6c_6b', '6a_6b'], width=16, height=16, key=False)
+    # build_cross(['7a','7b','7c'], width=20, height=20, key=False)
 
 if __name__ == '__main__':
     main()

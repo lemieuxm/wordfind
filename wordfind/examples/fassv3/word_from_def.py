@@ -13,19 +13,16 @@ def render_grid(data):
 
 def cross(grps):
     data, name = get_data_for_grps_sql(grps)
-    width=13
-    height=13
-    words=[]
-    defs=[]
-    for r in data:
-        words.append(r['word'])
-        defs.append(r['def'])
-    wfdict = buildFromWords(words, width, height, name, fillBlanks=False, defs=defs)
-
+    cols=24
+    rows=24
+    wfdict = buildFromWords(data, rows, cols, name, fillBlanks=False, trim=True)
+    if not wfdict:
+        print("Unable to find a valid layout.  Try making the grid bigger.")
+        return
     for r in wfdict['grid']:
         print("%s"%" ".join(r))
 
-    renderCross(wfdict, key=True) 
+    renderCross(wfdict, key=False) 
 
     print("found %i rows for %s"%(len(data), name))    
 
@@ -33,7 +30,11 @@ def cross(grps):
     
 
 def main():
-    cross(['sm2wk4'])
+    cross([
+        'sm2wk6', 
+        'sm2wk7',
+        # 'sm2wk3',
+        ])
     
 
 if __name__ == '__main__':

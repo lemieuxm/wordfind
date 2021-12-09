@@ -189,9 +189,71 @@ def removeBlanks(grid):
             if grid[i][j] == BLANK:
                 grid[i][j] = ""
     return(grid)
-    
 
-def _build(wfdict, fillBlanks=True):
+def clipEdgeBlanks(wfdict):
+    wfgrid = wfdict['grid']
+            # remove blank top rows        
+    cnt = 0
+    for r in range(wfdict['rows']):
+        for c in range(wfdict['columns']):
+            cnt += 1 if wfgrid[r][c] else 0
+        if cnt > 0:
+            print("r=%i"%r)
+            break
+    # clip first r rows r is the index of teh first non blank row
+    if r > 0:
+        wfgrid = wfgrid[r:]
+        for word in wfdict['words']:
+            word['start'] = (word['start'][0]-r, word['start'][1])
+        wfdict['rows'] = len(wfgrid)
+    
+    # remove blank bottom rows        
+    cnt = 0
+    for r in range(wfdict['rows']-1,-1,-1):
+        for c in range(wfdict['columns']):
+            cnt += 1 if wfgrid[r][c] else 0
+        if cnt > 0:
+            print("r=%i"%r)
+            break
+    # clip first r rows
+    if r < wfdict['rows']-1:
+        wfgrid = wfgrid[:r+1]
+        wfdict['rows'] = len(wfgrid)
+        
+    cnt = 0
+    for c in range(wfdict['columns']):
+        for r in range(wfdict['rows']):
+            cnt += 1 if wfgrid[r][c] else 0
+        if cnt > 0:
+            print("c=%i"%c)
+            break
+    if c > 0:
+        for r in range(wfdict['rows']):
+            wfgrid[r] = wfgrid[r][c:]
+        for word in wfdict['words']:
+            word['start'] = (word['start'][0], word['start'][1]-c)
+        wfdict['columns'] = len(wfgrid[0])
+        
+    cnt = 0
+    for c in range(wfdict['columns']-1,-1,-1):
+        for r in range(wfdict['rows']):
+            cnt += 1 if wfgrid[r][c] else 0
+        if cnt > 0:
+            print("c=%i"%c)
+            break     
+    if c < wfdict['columns']-1:
+        for r in range(wfdict['rows']):
+            wfgrid[r] = wfgrid[r][:c+1]
+        wfdict['columns'] = len(wfgrid[0])
+    
+    wfdict['grid'] = wfgrid
+    
+    #return(wfdict)
+    
+    print ("Finished clipping Edge Blanks")
+         
+
+def _build(wfdict, fillBlanks=True, trim=False):
     # Fill the grid with empty strings
     wfdictbackup = copy.deepcopy(wfdict)
     wfgrid = []
@@ -225,20 +287,24 @@ def _build(wfdict, fillBlanks=True):
             wfword['wordnum'] = wordnum
             starts_used[wfword['start']] = wordnum
 
+    wfdict['grid'] = wfgrid
+    wfdict['numwords'] = wordnum
+
+    
     if fillBlanks:
         wfgrid = fillBlanks(wfgrid)
     else:
         wfgrid = removeBlanks(wfgrid)
-        pass
-        
-    wfdict['grid'] = wfgrid
-    wfdict['numwords'] = wordnum
+
+    if trim:
+        clipEdgeBlanks(wfdict)
         
     return(True)    
+
     
-def build(wfdict, n=10000, fillBlanks=True):
+def build(wfdict, n=10000, fillBlanks=True, trim=False):
     for i in range(n):   # @UnusedVariable
-        if _build(wfdict, fillBlanks=fillBlanks):
+        if _build(wfdict, fillBlanks=fillBlanks, trim=trim):
             return(True)
         print("No puzzle after %i tries"%(i+1))
     return(False)
@@ -256,19 +322,32 @@ def strip_accents(s):
     s = re.sub('^la ', '', s)
     s = re.sub('^l\'', '', s)
     s = re.sub('^des ', '', s)
+    s = re.sub('-ed$', 'ed', s)
+    s = re.sub('-d$', 'd', s)
+    s = re.sub('-s$', 's', s)
+    s = re.sub('-', '', s)
     s = s.replace(" ", "")
     s = s.replace("'", "")
     return(s.upper()) 
     
     
-def buildFromWords(words, rows, cols, title, fillBlanks=True):
+def buildFromWords(words, rows, cols, title, fillBlanks=True, trim=False):
     wfdict = {'title':title, 'rows':rows, 'columns':cols, 'words':[]}
     
     for word_dict in words:
-        word_dict['wfword'] = strip_accents(word_dict['word'])
-        wfdict['words'].append(word_dict)
+        splits = [' | ', ' - ']
+        already_used = set()
+        for split in splits:
+            ws = word_dict['word'].split(split)
+            for w in ws:
+                w = w.strip()
+                if w in already_used:
+                    continue
+                word_dict['wfword'] = strip_accents(w)
+                already_used.add(w)
+                wfdict['words'].append(word_dict)
 
-    if build(wfdict, fillBlanks=fillBlanks):
+    if build(wfdict, fillBlanks=fillBlanks, trim=trim):
         return(wfdict)
     
     return(None)

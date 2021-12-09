@@ -32,12 +32,13 @@ def read_images(startDir, year='3rd', lang='FR'):
         if os.path.isdir(fullpath):
             files = os.listdir(fullpath)
             for file in files:
-                imageloc = os.path.join(d, file)
+                imageloc = os.path.join(fullpath, file)
                 word, imagedata = read_image_from_dir(imageloc)
 
                 sql = """insert into words (word, grp, src, lang, imageloc, image) values 
                     ('%s', '%s', '%s', '%s', '%s', %%s) on duplicate key update imageloc='%s' 
-                    """%(re.sub("'", "''", word), d, year, lang, imageloc, imageloc)
+                    """%(re.sub("'", "''", word), d, year, lang, 
+                         re.sub("'", "''", imageloc), re.sub("'", "''", imageloc))
                 print("sql: %s"%sql)
                 mh.executetuple(sql, imagedata)
                 i += 1

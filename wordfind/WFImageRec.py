@@ -17,12 +17,12 @@ PAGE_SIZE = (11.0*inch, 8.5*inch)
 BLANK_HEIGHT = 30
 MIN_WIDTH = 60
 NUM_ROWS = 2
-IMAGES_PER_ROW = 7
+IMAGES_PER_ROW = 9
 MARGIN = inch
 ROW_HEIGHT = (PAGE_SIZE[1]-MARGIN-MARGIN) / NUM_ROWS
 COL_WIDTH = (PAGE_SIZE[0]-MARGIN-MARGIN) / IMAGES_PER_ROW
-MAX_IMAGE_HEIGHT = ROW_HEIGHT-BLANK_HEIGHT
 MAX_IMAGE_WIDTH = COL_WIDTH
+MAX_IMAGE_HEIGHT = ROW_HEIGHT-BLANK_HEIGHT
 IMAGE_AREA_RATIO = MAX_IMAGE_WIDTH / float(MAX_IMAGE_HEIGHT)
 
 
@@ -33,7 +33,7 @@ def layout(data):
         dat['size'] = (im.width, im.height)
         dat['format'] = im.format
         dat['pilim'] = im  # -- only if needed
-        print("read in the image for %s."%dat['word'])
+        # print("read in the image for %s."%dat['word'])
     
     walk = [i for i in range(len(data))]
     row_starts = [0 for _ in range(NUM_ROWS)]
@@ -50,10 +50,10 @@ def layout(data):
         # else:
         #     dat['r_size'] = (MAX_IMAGE_WIDTH, size[0] )
 
-
-        if MARGIN+row_starts[cur_row]+MAX_IMAGE_WIDTH+MARGIN-2 > PAGE_SIZE[0]:
+        while MARGIN+row_starts[cur_row]+MAX_IMAGE_WIDTH+MARGIN-2 > PAGE_SIZE[0]:
             cur_row += 1
         dat['r_xy'] = (MARGIN+row_starts[cur_row], PAGE_SIZE[1]-MARGIN-(cur_row*ROW_HEIGHT)-ROW_HEIGHT)
+        # print("%i: %s"%(i, str(dat['r_xy'])))
         # row_starts[cur_row] += dat['r_size'][0]
         row_starts[cur_row] += MAX_IMAGE_WIDTH
 
@@ -87,12 +87,14 @@ def render(data, name, outFileName=None):
     return(canvas)
 
 def create_imagerec(data, name):
-    global NUM_ROWS, IMAGES_PER_ROW, COL_WIDTH, MAX_IMAGE_WIDTH, IMAGE_AREA_RATIO
-    while len(data)/NUM_ROWS > 7:
+    global NUM_ROWS, IMAGES_PER_ROW, COL_WIDTH, MAX_IMAGE_WIDTH, IMAGE_AREA_RATIO, ROW_HEIGHT, MAX_IMAGE_HEIGHT
+    while len(data)/NUM_ROWS > 6:
         NUM_ROWS += 1
     IMAGES_PER_ROW=ceil(len(data)/NUM_ROWS)
     COL_WIDTH = (PAGE_SIZE[0]-MARGIN-MARGIN) / IMAGES_PER_ROW
     MAX_IMAGE_WIDTH = COL_WIDTH
+    ROW_HEIGHT = (PAGE_SIZE[1]-MARGIN-MARGIN) / NUM_ROWS
+    MAX_IMAGE_HEIGHT = ROW_HEIGHT-BLANK_HEIGHT
     IMAGE_AREA_RATIO = MAX_IMAGE_WIDTH / float(MAX_IMAGE_HEIGHT)
     data = layout(data)
     render(data, name)
