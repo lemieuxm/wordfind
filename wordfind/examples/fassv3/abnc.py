@@ -71,9 +71,15 @@ def build_worksheet(grps):
 
 
 def main():
-    build_worksheet(['7a','7b'])
-    build_worksheet(['7b','7c'])
-    build_worksheet(['7a','7b','7c'])
+    build_worksheet(['8a','8b'])
+    build_worksheet(['8b','8c'])
+    build_worksheet(['8a','8c'])
+    build_worksheet(['8a','8b','8c'])
+    
+    # build_worksheet(['7a','7b'])
+    # build_worksheet(['7b','7c'])
+    # build_worksheet(['7a','7c'])
+    # build_worksheet(['7a','7b','7c'])
     # build_worksheet(['6c_6b'])
     # build_cross(['6a_6b'], width=12, height=12, key=False)
     # build_cross(['6c_6b'], width=12, height=12, key=False)

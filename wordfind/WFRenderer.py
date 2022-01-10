@@ -125,7 +125,7 @@ def renderCross(wfdict, outFileName=None, key=False):
     height_area = max(height_area, (pageSize[1]*inch-2*margin)/2)
     y_delta = height_area / len(g)
     if height_area > width_area:
-        print("ERROR - this shoudl never happen")
+        print("ERROR - this should never happen")
 
     {'word': 'un dos', 'wfword': 'DOS', 
      'imageloc': '/Users/mdl/Documents/XavierFASSV/mots/images/6a_6b/un_dos.jpg', 

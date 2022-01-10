@@ -28,6 +28,7 @@ IMAGE_AREA_RATIO = MAX_IMAGE_WIDTH / float(MAX_IMAGE_HEIGHT)
 
 def layout(data):
     for dat in data:
+        print("reading image: %s"%dat['imageloc'])
         im_file = io.BytesIO(dat['image'])
         im = PIL.Image.open(im_file)
         dat['size'] = (im.width, im.height)
