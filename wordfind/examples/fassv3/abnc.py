@@ -8,12 +8,13 @@ import os
 
 from wordfind.WFBuilder import buildFromWords
 from wordfind.WFImageRec import create_imagerec
-from wordfind.WFRenderer import renderCross
+from wordfind.WFRenderer import renderCross, renderPDF
 from wordfind.data.import_images import read_image_from_dir
 from wordfind.data.mysql_helper import MysqlHelper
 
 
 IMAGE_ROOT = "/Users/mdl/Documents/XavierFASSV/mots/images"
+
 
 def build_worksheet_sql(grps):
     mh = MysqlHelper()
@@ -32,6 +33,8 @@ def build_worksheet_sql(grps):
     name = os.path.sep.join(grps)
     create_imagerec(data, name)
     print("found %i rows for %s"%(len(data), name))
+
+
 
 def get_data(grps):
     data = []
@@ -55,10 +58,24 @@ def build_cross(grps, width=16, height=16, name=None, key=False):
     if not name:
         name = os.path.sep.join(grps)
         
-    wfdict = buildFromWords(data, width, height, name, fillBlanks=False)
+    wfdict = buildFromWords(data, width, height, name, fillBlanks=False, trim=True)
     for r in wfdict['grid']:
         print("%s"%" ".join(r))
     renderCross(wfdict, key=key) 
+
+    print("found %i rows for %s"%(len(data), name))
+    
+    
+def word_find(grps, width=16, height=16, name=None, key=False):
+    data = get_data(grps)
+    
+    if not name:
+        name = "wordfind_"+"_".join(grps)
+        
+    wfdict = buildFromWords(data, width, height, name, fillBlanks=True, trim=False)
+    for r in wfdict['grid']:
+        print("%s"%" ".join(r))
+    renderPDF(wfdict) 
 
     print("found %i rows for %s"%(len(data), name))
     
@@ -71,10 +88,22 @@ def build_worksheet(grps):
 
 
 def main():
-    build_worksheet(['8a','8b'])
-    build_worksheet(['8b','8c'])
-    build_worksheet(['8a','8c'])
-    build_worksheet(['8a','8b','8c'])
+
+    build_worksheet(['10a','10b','10c'])
+    build_cross(['10a','10b','10c','9c'], 20, 20)
+    word_find(['10a','10b','10c','9a','9b','9c'], 20, 20)
+    
+
+    # build_worksheet(['9a','9b'])
+    # build_cross(['9a','9b','8c'])
+    # build_worksheet(['9c'])
+    # build_cross(['9a','9b','9c'])
+    # build_worksheet(['9a','9b','9c'])
+    
+    # build_worksheet(['8a','8b'])
+    # build_worksheet(['8b','8c'])
+    # build_worksheet(['8a','8c'])
+    # build_worksheet(['8a','8b','8c'])
     
     # build_worksheet(['7a','7b'])
     # build_worksheet(['7b','7c'])

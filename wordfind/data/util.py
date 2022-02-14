@@ -43,7 +43,8 @@ def get_data_for_grps_csv(grps, filename, quotechar = '"', delimiter=','):
                 ws = row['word'].strip().split('-')
                 words.append(ws[0])
                 words.append(ws[0]+ws[1])
-            elif re.match(r'|', row['word']):
+            # elif re.match(r'|', row['word']):
+            elif '|' in row['word']:
                 ws = row['word'].strip().split('|')
                 for w in ws:
                     words.append(w)
@@ -53,6 +54,6 @@ def get_data_for_grps_csv(grps, filename, quotechar = '"', delimiter=','):
                 word = {'word': w}
                 word.update(row)
             wordobjs.append(word)
-    name = "|".join(grps)
+    name = '|'.join(grps)
     return(wordobjs, name)
 

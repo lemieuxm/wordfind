@@ -44,7 +44,7 @@ def import_from_file(filename, config, sep="\t", dbcols=['word'], quotechar='"')
                     else:
                         sql += "'%s'"%row[col]
                 sql += ')'
-                sql += "on duplicate key update pos='%s'"%row['pos']
+                sql += "on duplicate key update pos='%s', def='%s'"%(row['pos'],row['def'].replace("'", "''"))
                 sqls.append(sql)
         print("Executing %i sql statements."%len(sqls))
         # mysqlh.execute_sqls(sqls)

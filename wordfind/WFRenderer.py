@@ -5,8 +5,10 @@ Created on Nov 15, 2021
 '''
 
 from math import floor
+import os
 
 from reportlab.lib.colors import black
+from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
@@ -14,21 +16,20 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus.para import Paragraph
 
 from wordfind.WFBuilder import DIRECTIONS, BLANK
-from reportlab.lib.enums import TA_LEFT
 
 
 def renderPDF(wfdict, outFileName=None):
     # units in points (1 point = 1/72nd inch
     pageSize = (8.5,11.0)
     if not outFileName:
-        outFileName = "/tmp/%s.pdf"%wfdict['title']
+        outFileName = "/tmp/%s.pdf"%wfdict['title'].replace(os.path.sep,'_')
     print("width=%.1f; height=%.1f"%(pageSize[0]*inch, pageSize[1]*inch))
     canvas = Canvas(outFileName, pagesize=(pageSize[0]*inch, pageSize[1]*inch))
     
     titleFontSize = 20
     canvas.setFont("Helvetica", titleFontSize)
     canvas.drawCentredString(pageSize[0]*inch/2, pageSize[1]*inch - inch, wfdict['title'])
-    titleHeight = titleFontSize*2
+    titleHeight = titleFontSize*3
     canvas.setFont("Helvetica", 12)
     margin = 0.8*inch
     width_area = pageSize[0]*inch - 2*margin

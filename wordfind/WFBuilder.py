@@ -44,7 +44,7 @@ def canBeAdded(word, grid, dirTuple, start, requireIntersect=False):
     #      letter in the same direction
     r = start[0]-dirTuple[0]
     c = start[1]-dirTuple[1]
-    if r>=0 and c>=0 and grid[r][c]:
+    if r>=0 and c>=0 and r<len(grid) and c<len(grid[r]) and grid[r][c]:
         return(False)
     # Don't end words with another letter after the ending 
     #      letter in the same direction
@@ -165,7 +165,7 @@ def addWordForCW(word, grid):
 
 # list('abcdefghijklmnopqrstuvwxyz')
 
-def fillBlanks(grid):
+def doFillBlanks(grid):
     rows = len(grid)
     cols = len(grid[0])
     letters = []
@@ -292,7 +292,7 @@ def _build(wfdict, fillBlanks=True, trim=False):
 
     
     if fillBlanks:
-        wfgrid = fillBlanks(wfgrid)
+        wfgrid = doFillBlanks(wfgrid)
     else:
         wfgrid = removeBlanks(wfgrid)
 
