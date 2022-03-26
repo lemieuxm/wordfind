@@ -45,6 +45,8 @@ def get_data(grps):
             continue
         images = os.listdir(fullpath)
         for image in images:
+            if image.startswith('.'):
+                continue
             im_full = os.path.join(fullpath, image)
             word, imagedata = read_image_from_dir(im_full)
             dat = {'word': word, 'imageloc': im_full, 'image': imagedata}
@@ -83,15 +85,20 @@ def word_find(grps, width=16, height=16, name=None, key=False):
 def build_worksheet(grps):
     data = get_data(grps)
     name = '_'.join(grps)
+    print("found %i rows for %s, creating..."%(len(data), name))
     create_imagerec(data, name)
-    print("found %i rows for %s"%(len(data), name))
 
 
 def main():
-
-    build_worksheet(['10a','10b','10c'])
-    build_cross(['10a','10b','10c','9c'], 20, 20)
-    word_find(['10a','10b','10c','9a','9b','9c'], 20, 20)
+    grp = ['13a','13b','11c', '11b']
+    build_worksheet(grp)
+    # build_cross(['11a','11b','11c'], width=12, height=12)
+    word_find(grp, width=15, height=15)
+    
+    
+    # build_worksheet(['10a','10b','10c'])
+    # build_cross(['10a','10b','10c','9c'], 20, 20)
+    # word_find(['10a','10b','10c','9a','9b','9c'], 20, 20)
     
 
     # build_worksheet(['9a','9b'])

@@ -11,17 +11,15 @@ from wordfind.data.util import get_data_for_grps_sql, get_data_for_grps_csv
 def render_grid(data):
     pass
     
-def cross_sql(grps):
+def cross_sql(grps, rows=20, cols=20):
     data, name = get_data_for_grps_sql(grps)
     return(cross(data, name))    
 
-def cross_csv(grps, filename):
+def cross_csv(grps, filename, rows=20, cols=20):
     data, name = get_data_for_grps_csv(grps, filename)
     return(cross(data, name))    
 
-def cross(data, name):    
-    cols=20
-    rows=20
+def cross(data, name, rows=20, cols=20):
     wfdict = buildFromWords(data, rows, cols, name, fillBlanks=False, trim=True)
     if not wfdict:
         print("Unable to find a valid layout.  Try making the grid bigger.")
@@ -36,9 +34,9 @@ def cross(data, name):
     print("Created crossword.")
 
 
-def word_find_sql(grps):
+def word_find_sql(grps, cols=12, rows=12):
     data, name = get_data_for_grps_sql(grps)
-    return(word_find(data, name))    
+    return(word_find(data, name, cols=cols, rows=rows))    
 
 def word_find_csv(grps, filename, title=None, cnt=1, cols=15, rows=15):
     data, name = get_data_for_grps_csv(grps, filename)
@@ -93,9 +91,9 @@ def main():
     #     # 'sm2wk3',
     #     'sm2rev',
     #     ])
-    filename = "/Users/mdl/Documents/XavierFASSV/ValentinesWords2022"
-    word_find_csv(['vd'], filename, "Valentine's Day 2022", cnt = 20, cols=12, rows=11)
-    exit(0)
+    # filename = "/Users/mdl/Documents/XavierFASSV/ValentinesWords2022"
+    # word_find_csv(['vd'], filename, "Valentine's Day 2022", cnt = 20, cols=12, rows=11)
+    #     exit(0)
     # grps = ['sm3wk4']
     # worksheet_sql(grps, blank=True)
     # print("Finished creating worksheet for %s"%("|".join(grps)))
@@ -106,13 +104,18 @@ def main():
 
     # exit(0)    
     #filename = "/Users/mdl/Documents/XavierFASSV/mots/3rdGradeVocab.csv"
-    grps = ['sm3wk4', 'sm3wk3']
     # cross_csv(grps, filename)
-    cross_sql(grps)
-    word_find_sql(grps)
+    grps = ['sm3wk4', 'sm3wk2']
+    rows=14
+    cols=14
+    
+    cross_sql(grps, rows=rows, cols=cols)
+    word_find_sql(grps, cols=cols, rows=rows)
+    grps = ['sm3wk4', 'sm3wk3']
+    worksheet_sql(grps, blank=True)
 #    print("Finished creating crossword puzzles for %s"%("|".join(grps)))
     
-    
+
           
 
 if __name__ == '__main__':

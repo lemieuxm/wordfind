@@ -12,10 +12,19 @@ from reportlab.lib.enums import TA_LEFT
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.lib.utils import ImageReader
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus.para import Paragraph
 
 from wordfind.WFBuilder import DIRECTIONS, BLANK
+
+
+FONT_NAME = "Helvetica"
+# /System/Library/Fonts/Supplemental/Arial.ttf
+
+# TODO: put this path in a config file. 
+pdfmetrics.registerFont(TTFont('Helvetica', '/System/Library/Fonts/Helvetica.ttc'))
 
 
 def renderPDF(wfdict, outFileName=None):
@@ -27,10 +36,14 @@ def renderPDF(wfdict, outFileName=None):
     canvas = Canvas(outFileName, pagesize=(pageSize[0]*inch, pageSize[1]*inch))
     
     titleFontSize = 20
-    canvas.setFont("Helvetica", titleFontSize)
+    # FONT_NAME = "Helvetica"
+    available_fonts = canvas.getAvailableFonts()
+    if FONT_NAME not in available_fonts:
+        print("Can't find the font: %s"%FONT_NAME)
+    canvas.setFont(FONT_NAME, titleFontSize)
     canvas.drawCentredString(pageSize[0]*inch/2, pageSize[1]*inch - inch, wfdict['title'])
     titleHeight = titleFontSize*3
-    canvas.setFont("Helvetica", 12)
+    canvas.setFont(FONT_NAME, 12)
     margin = 0.8*inch
     width_area = pageSize[0]*inch - 2*margin
     g = wfdict['grid']
@@ -51,9 +64,9 @@ def renderPDF(wfdict, outFileName=None):
     colDelta = width_area / word_columns
     words_height = 19
     y_line -= words_height
-    canvas.setFont("Helvetica", 12)
+    canvas.setFont(FONT_NAME, 12)
     def getwfword(w):
-        return(w['wfword'])
+        return(w['wfword'].encode())
     
     words = sorted(wfdict['words'], key=getwfword)
     for i in range(len(words)):
@@ -61,7 +74,7 @@ def renderPDF(wfdict, outFileName=None):
         dmod = divmod(i, word_columns)
         x = margin + dmod[1]*colDelta
         y = y_line - dmod[0]*words_height
-        canvas.drawString(x,y,word['word']) 
+        canvas.drawString(x,y,word['word'].encode()) 
     
     canvas.showPage()
     canvas.save()
@@ -112,11 +125,11 @@ def renderCross(wfdict, outFileName=None, key=False):
     canvas = Canvas(outFileName, pagesize=(pageSize[0]*inch, pageSize[1]*inch))
 
     titleFontSize = 25
-    canvas.setFont("Helvetica", titleFontSize)
+    canvas.setFont(FONT_NAME, titleFontSize)
     margin = 1*inch
     canvas.drawCentredString(pageSize[0]*inch/2, pageSize[1]*inch-margin, wfdict['title'])
     titleHeight = titleFontSize*1.05
-    canvas.setFont("Helvetica", 12)
+    canvas.setFont(FONT_NAME, 12)
     width_area = pageSize[0]*inch - 2*margin
     g = wfdict['grid']
     x_delta = width_area / len(g[0])
@@ -140,7 +153,7 @@ def renderCross(wfdict, outFileName=None, key=False):
     for wordct in wfdict['words']:
         r, c = wordct['start']
         wordnum_label_size = floor(min(x_delta,y_delta)/2.95)
-        canvas.setFont("Helvetica", wordnum_label_size)
+        canvas.setFont(FONT_NAME, wordnum_label_size)
         y = pageSize[1]*inch - margin - titleHeight - r*y_delta - y_delta
         x = margin + c*x_delta
         canvas.setStrokeColor(black)
@@ -150,7 +163,7 @@ def renderCross(wfdict, outFileName=None, key=False):
         for _ in range(len(wordct['wfword'])):
             y = pageSize[1]*inch - margin - titleHeight - r*y_delta - y_delta
             x = margin + c*x_delta
-            canvas.setFont("Helvetica", font_size)
+            canvas.setFont(FONT_NAME, font_size)
             # this needs to be commented out for the final version
             if key:
                 canvas.setStrokeColor(black)
@@ -179,7 +192,7 @@ def renderCross(wfdict, outFileName=None, key=False):
         
     canvas.setStrokeColor(black)
     canvas.setFillColor(black)    
-    canvas.setFont("Helvetica", font_size)
+    canvas.setFont(FONT_NAME, font_size)
     
     y_line = pageSize[1]*inch - margin - len(g)*y_delta - titleHeight -5
     # canvas.line(margin,y_line,pageSize[0]*inch-margin,y_line)
@@ -189,7 +202,7 @@ def renderCross(wfdict, outFileName=None, key=False):
     words = sorted(wfdict['words'], key=getwordnum)
 
     font_size = 12
-    canvas.setFont("Helvetica", font_size)    
+    canvas.setFont(FONT_NAME, font_size)    
     labels = ["Down | Verticalement", "Across | Horizontalement"]
     dis = {4:0,2:1}
     section_height = (y_line-margin)/2
@@ -201,7 +214,7 @@ def renderCross(wfdict, outFileName=None, key=False):
         # canvas.drawString(margin, tops[i]-section_title_height-font_size/2, labels[i])
         canvas.setFont("Helvetica-Bold", font_size)
         canvas.drawString(margin, tops[i]-section_title_height, labels[i])
-        canvas.setFont("Helvetica", font_size)
+        canvas.setFont(FONT_NAME, font_size)
         # msg = labels[i]
         # # max_width = width_area
         # # max_height = section_title_height-2
@@ -212,7 +225,7 @@ def renderCross(wfdict, outFileName=None, key=False):
     for word in words:
         cnts[dis[word['direction']]] += 1
     
-    canvas.setFont("Helvetica", font_size)
+    canvas.setFont(FONT_NAME, font_size)
     num_rows = []
     words_heights = []
     word_columns = []
