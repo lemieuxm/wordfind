@@ -23,8 +23,10 @@ from wordfind.WFBuilder import DIRECTIONS, BLANK
 FONT_NAME = "Helvetica"
 # /System/Library/Fonts/Supplemental/Arial.ttf
 
-# TODO: put this path in a config file. 
-pdfmetrics.registerFont(TTFont('Helvetica', '/System/Library/Fonts/Helvetica.ttc'))
+# TODO: put this path in a config file.
+# fontfile = '/System/Library/Fonts/Helvetica.ttc'
+fontfile = "/home/mdl/Documents/Code/wordfind/OpenSans-Regular.ttf"
+pdfmetrics.registerFont(TTFont('Helvetica', fontfile))
 
 
 def renderPDF(wfdict, outFileName=None):

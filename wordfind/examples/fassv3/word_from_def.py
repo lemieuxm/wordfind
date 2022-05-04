@@ -105,14 +105,20 @@ def main():
     # exit(0)    
     #filename = "/Users/mdl/Documents/XavierFASSV/mots/3rdGradeVocab.csv"
     # cross_csv(grps, filename)
-    grps = ['sm3wk4', 'sm3wk2']
-    rows=14
-    cols=14
-    
-    cross_sql(grps, rows=rows, cols=cols)
+    # grps = ['sm3wk2', 'sm3wk3', 'sm3wk1']
+    grps = ['sm2wk6', 'sm2wk7']
+    grps = ['sm3wk1', 'sm3wk2']
+    rows=18
+    cols=18
+    # cross_sql(grps, rows=rows, cols=cols)
+
+    #grps = ['sm3wk2', 'sm3wk3', 'sm3wk1', 'sm3wk4']
+    rows=16
+    cols=rows
     word_find_sql(grps, cols=cols, rows=rows)
-    grps = ['sm3wk4', 'sm3wk3']
-    worksheet_sql(grps, blank=True)
+
+    # grps = ['wk4', 'wk3']
+    # worksheet_sql(grps, blank=True)
 #    print("Finished creating crossword puzzles for %s"%("|".join(grps)))
     
 
@@ -123,3 +129,45 @@ if __name__ == '__main__':
     
     
     
+    
+    
+    # grp, lang, count(1), min(wordid)
+# 'adjective', '3rd', '5', '1468'
+# 'verb', '3rd', '8', '1474'
+# 'adverb', '3rd', '7', '1488'
+# 'phrase', '3rd', '1', '1508'
+# 'noun', '3rd', '2', '1544'
+# 'sm2wk4', 'EN', '14', '12'
+# 'wk2', 'EN', '8', '22'
+# 'wk3', 'EN', '9', '30'
+# 'wk4', 'EN', '9', '39'
+# 'wk5', 'EN', '9', '48'
+# 'wk6', 'EN', '9', '57'
+# 'wk7', 'EN', '9', '66'
+# 'sm2wk1', 'EN', '20', '75'
+# 'sm2wk2', 'EN', '10', '85'
+# 'sm2wk3', 'EN', '10', '95'
+# 'sm2wk6', 'EN', '10', '587'
+# 'sm2wk7', 'EN', '15', '1062'
+# 'sm2rev', 'EN', '21', '1318'
+# 'sm3wk1', 'EN', '10', '1457'
+# 'sm3wk2', 'EN', '10', '1467'
+# 'unkwk1', 'EN', '10', '1837'
+# 'sm3wk3', 'EN', '10', '2266'
+# 'sm3wk4', 'EN', '10', '2435'
+# '6c_6b', 'FR', '9', '205'
+# '6a_6b', 'FR', '12', '214'
+# '7c', 'FR', '5', '1204'
+# '7b', 'FR', '9', '1209'
+# '7a', 'FR', '10', '1230'
+# '8a', 'FR', '6', '1798'
+# '8c', 'FR', '5', '1816'
+# '8b', 'FR', '7', '1820'
+# '9b', 'FR', '6', '2006'
+# '9c', 'FR', '9', '2012'
+# '9a', 'FR', '2', '2050'
+# '10c', 'FR', '9', '2170'
+# '10b', 'FR', '7', '2179'
+# '10a', 'FR', '7', '2226'
+# ' fit', 'wk3', '1', '1576'
+# ' OK', 'wk6', '1', '1598'

@@ -118,6 +118,8 @@ def addWordForCW(word, grid):
     
     if isEmpty(grid):
         grid, i, j, k = addWord(word, grid, directions)
+        if i == None or j == None or k == None:
+            return(grid,i,j,k)
         r = j-DIRECTIONS[i][0]
         c = k-DIRECTIONS[i][1]
         if r>=0 and c>=0 and not grid[r][c]:

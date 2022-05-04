@@ -13,8 +13,7 @@ from wordfind.data.import_images import read_image_from_dir
 from wordfind.data.mysql_helper import MysqlHelper
 
 
-IMAGE_ROOT = "/Users/mdl/Documents/XavierFASSV/mots/images"
-
+IMAGE_ROOT = "/home/mdl/Documents/XavierFASSV/mots/images"
 
 def build_worksheet_sql(grps):
     mh = MysqlHelper()
@@ -90,16 +89,22 @@ def build_worksheet(grps):
 
 
 def main():
-    grp = ['13a','13b','11c', '11b']
+    #grp = ['13a','13b','13c']
+    #build_worksheet(grp)
+    # word_find(grp, width=12, height=12)
+    #build_cross(grp, width=13, height=13)
+
+    grp = ['14a','14b','14c']
+    grp = ['15a','15b','15c']
+    size = 14
+    word_find(grp, width=size, height=size)
     build_worksheet(grp)
-    # build_cross(['11a','11b','11c'], width=12, height=12)
-    word_find(grp, width=15, height=15)
-    
+    size = 17
+    build_cross(grp, width=size, height=size)
     
     # build_worksheet(['10a','10b','10c'])
     # build_cross(['10a','10b','10c','9c'], 20, 20)
     # word_find(['10a','10b','10c','9a','9b','9c'], 20, 20)
-    
 
     # build_worksheet(['9a','9b'])
     # build_cross(['9a','9b','8c'])
